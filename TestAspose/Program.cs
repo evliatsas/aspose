@@ -225,10 +225,10 @@ namespace TestAspose
             var path = $"original\\{filename}";
             var certPath = $"certificates\\{certificate}";
 
-            var authority = "Ίριδα";
+            var authority = "ΥΠΕΘΑ";
             var contactInfo = "Ευάγγελος Λιάτσας";
-            var location = "ΥΠΕΘΑ";
-            var reason = "Αρ.Π.:4322/12";
+            var location = "Αθήνα";
+            var reason = "ΑΠ: 4322/12";
 
             using (Aspose.Pdf.Document doc = new Aspose.Pdf.Document(path))
             {                
@@ -239,15 +239,15 @@ namespace TestAspose
                 sig.ContactInfo = contactInfo;
                 sig.Location = location;
                 sig.Reason = reason;
-                sig.ShowProperties = false;
-                // Set signature background image
-                var lines = new List<string>() { authority, contactInfo, location, reason };
-                signature.SignatureAppearanceStream = createSigningImage("emblem.png", lines);                
+                sig.ShowProperties = false;                                
                 // Set signature position
                 var height = (int)(doc.PageInfo.Height - doc.PageInfo.Margin.Top);
-                var width = (int)(doc.PageInfo.Width - doc.PageInfo.Margin.Right);
+                var width = (int)(doc.PageInfo.Width-10);
                 var size = 50;
                 var rect = new Aspose.Pdf.Rectangle(width - size, height - size, width, height);
+                // Set signature background image
+                var lines = new List<string>() { authority, reason, contactInfo, location };
+                signature.SignatureAppearanceStream = createSigningImage("sign_stamp.png", lines);
                 // Sign the document
                 signature.Sign(1, true, rect.ToRect(), sig);
                 // Save output PDF file
@@ -391,16 +391,20 @@ namespace TestAspose
                     //Creates and initialize an instance of Graphics class
                     using (var graphics = System.Drawing.Graphics.FromImage(image))
                     {
-                        var font = new System.Drawing.Font("Helvetica", 18);
-                        var brush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
-
-                        float x = 10;
-                        float y = 50;
-                        foreach (var line in lines)
+                        using (var font = new System.Drawing.Font("Helvetica", 17))
                         {
-                            //Draw a String
-                            graphics.DrawString(line, font, brush, new System.Drawing.PointF(x, y));
-                            y += 35;
+                            using (var brush = new System.Drawing.SolidBrush(System.Drawing.Color.Black))
+                            {
+                                var units = System.Drawing.GraphicsUnit.Point;
+                                var rectF = image.GetBounds(ref units);
+                                var sb = new System.Text.StringBuilder();
+                                sb.AppendJoin(System.Environment.NewLine, lines);
+                                var stringFormat = new System.Drawing.StringFormat();
+                                stringFormat.Alignment = System.Drawing.StringAlignment.Center;
+                                stringFormat.LineAlignment = System.Drawing.StringAlignment.Center;
+                                //Draw a String
+                                graphics.DrawString(sb.ToString(), font, brush, rectF, stringFormat);
+                            }
                         }
                     }
 

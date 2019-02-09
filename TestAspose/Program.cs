@@ -225,8 +225,8 @@ namespace TestAspose
             var path = $"original\\{filename}";
             var certPath = $"certificates\\{certificate}";
 
-            var authority = "ΥΠΕΘΑ";
-            var contactInfo = "Ευάγγελος Λιάτσας";
+            var authority = "Υπουργείο Εσωτερικών";
+            var contactInfo = "Ιωάννου Κωνσταντίνος";
             var location = "Αθήνα";
             var reason = "ΑΠ: 4322/12";
 
@@ -239,12 +239,14 @@ namespace TestAspose
                 sig.ContactInfo = contactInfo;
                 sig.Location = location;
                 sig.Reason = reason;
-                sig.ShowProperties = false;                                
+                sig.ShowProperties = false;
                 // Set signature position
-                var height = (int)(doc.PageInfo.Height - doc.PageInfo.Margin.Top);
-                var width = (int)(doc.PageInfo.Width-10);
                 var size = 50;
-                var rect = new Aspose.Pdf.Rectangle(width - size, height - size, width, height);
+                var llx = doc.Pages[1].Rect.URX - size - 10;
+                var lly = doc.Pages[1].Rect.URY - size - 10;
+                var urx = doc.Pages[1].Rect.URX - 10;
+                var ury = doc.Pages[1].Rect.URY - 10;
+                var rect = new Aspose.Pdf.Rectangle(llx, lly, urx, ury);
                 // Set signature background image
                 var lines = new List<string>() { authority, reason, contactInfo, location };
                 signature.SignatureAppearanceStream = createSigningImage("sign_stamp.png", lines);
